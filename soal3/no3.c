@@ -5,6 +5,8 @@
 #include<unistd.h>
 #include<sys/types.h>
 #include<sys/wait.h>
+#include <sys/stat.h> 
+#define MAX 256
  
 /*************** PROTOTYPES ************************/
 static void StripFileName(char *FileName, char *NewFileName, char *ekstensi);
@@ -18,6 +20,7 @@ struct v
     char *x[1];
     char *y[1];
     char *z[1];
+    char *za[1];
 };
 /**************************************************/
 /*************** GLOBAL VARIABLE ******************/
@@ -31,7 +34,8 @@ int main(int argc, char* argv[])
     char FileName[31];
     char NewFileName[31];
     char ekstensi[5];
-    char path[50];
+    char pathawal[50];
+    char pathakhir[50];
     char bintang[] = "*";
     char f[] = "-f";
     char d[] = "-d";
@@ -43,20 +47,31 @@ int main(int argc, char* argv[])
         // ngeloop sebanyak argumen yang diminta
         for (; i < argc; i++)
         {
+            // memset
+            memset(FileName, 0, sizeof(FileName));
+            memset(NewFileName, 0, sizeof(NewFileName));
+            memset(ekstensi, 0, sizeof(ekstensi));
+            memset(pathawal, 0, sizeof(pathawal));
+            memset(pathakhir, 0, sizeof(pathakhir));
+
             // mencari nama file, ekstensi, dan path
             strcpy(FileName, argv[i]);
             StripFileName(FileName, NewFileName, ekstensi);
             strcat(NewFileName, ".");
             strcat(NewFileName, ekstensi);
-            strcat(path, "/Users/samsudhuha/Desktop/sisop/shift3/");
-            strcat(path, ekstensi);
-            strcat(path, "/");
+            strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/");
+            strcat(pathawal, NewFileName);
+            strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
+            strcat(pathakhir, ekstensi);
+            strcat(pathakhir, "/");
+            strcat(pathakhir, NewFileName);
 
             // ditaruh dalam struct
             struct v *data = (struct v*) malloc (sizeof (struct v));
             *data -> x = NewFileName;
             *data -> y = ekstensi;
-            *data -> z = path;
+            *data -> z = pathawal;
+            *data -> za = pathakhir;
 
             int k = 0;
             status = 0;
@@ -69,14 +84,9 @@ int main(int argc, char* argv[])
                 } else {
                     pthread_create(&(tid[k]),NULL,&move,(void *) data);
                 }
+                pthread_join(tid[k],NULL);
                 k++;
             }
-        }
-        int k = 0;
-        while (k<2)
-        {
-            pthread_join(tid[k],NULL);
-            k++;
         }
     }
 
@@ -161,9 +171,7 @@ void* makedir(void *param)
 
     status = 1;
 
-    printf("masuk dir\n");
-    char *mkdir[] = {"mkdir", "-p", *par -> y, NULL};
-    execv("/bin/mkdir", mkdir);
+    mkdir(*par->y, 0777);
 
 	return NULL;
 }
@@ -172,14 +180,36 @@ void* move(void *param)
 {
     struct v *par = (struct v*) param;
 
-    printf("masuk move\n");
     while (status != 1)
     {
-        /* code */
+
     }
     
-    char* move[] = {"mv", *par->x, *par->z, NULL};
-    execv("/bin/mv", move);
+    int ch;
+    FILE *fp1, *fp2;
+
+    fp1 = fopen(*par->z, "r");
+    fp2 = fopen(*par->za, "w");
+
+    /* error handling */
+    if (!fp1) {
+            printf("Unable to open source file to read!!\n");
+            fclose(fp2);
+            return 0;
+    }
+    if (!fp2) {
+            printf("Unable to open target file to write\n");
+            return 0;
+    }
+    /* copying contents of source file to target file */
+    while ((ch = fgetc(fp1)) != EOF) {
+            fputc(ch, fp2);
+    }
+    /* closing the opened files */
+    fclose(fp1);
+    fclose(fp2);
+    /* removing the source file */
+    remove(*par->z);
 
 	return NULL;
 }
