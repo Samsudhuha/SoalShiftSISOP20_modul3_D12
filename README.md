@@ -19,20 +19,22 @@ Samsu Dhuha   05111840000155
 
 ``
 
-struct v
-{
-	int i; /* row */
-	int j; /* column */
-};
 
 void *runner(void *ptr); /* the thread */
 
+
 int main(int argc, char **argv)
+
 {
+
 	int i, j;
+	
 	int thread_counter = 0;
+	
     key_t key = 1234;
+    
     int shmid = shmget(key, sizeof(int[10][10]), IPC_CREAT | 0666);
+    
     value = shmat(shmid, 0, 0);
     
 	
