@@ -15,23 +15,10 @@ Samsu Dhuha   05111840000155
 ##### 1. Buatlah program C dengan nama "4a.c", yang berisi program untukmelakukan perkalian matriks. Ukuran matriks pertama adalah 4x2, dan matriks kedua 2x5. Isi dari matriks didefinisikan di dalam kodingan. Matriks nantinya akan berisi angka 1-20 (tidak perlu dibuat filter angka).
 ##### 2. Tampilkan matriks hasil perkalian tadi ke layar.
 
-
-/* Global variables for threads to share */
-``
-int A[M][K] = {{0,1},
-               {2,3},
-               {4,5},
-               {6,7}
-              };
-int B[K][N] = {{1,1,1,1,1}, 
-               {1,1,1,1,1}
-              };
-
-``
-
 /* Structure for passing data to threads */
 
 ``
+
 struct v
 {
 	int i; /* row */
