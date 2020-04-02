@@ -73,9 +73,13 @@ int main(int argc, char **argv)
 }
 
 void *runner(void *ptr)
+
 {	
+
 	/* Casting paramater to struct v pointer */
+	
 	struct v *data = ptr;
+	
 	int i, sum = 0;
 	
 	for(i = 0; i < K; i++)
@@ -84,6 +88,7 @@ void *runner(void *ptr)
 	}
 	
 	value[data->i][data->j] = sum;
+	
 	pthread_exit(0);
 }
 
