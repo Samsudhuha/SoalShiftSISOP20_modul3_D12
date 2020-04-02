@@ -63,10 +63,9 @@ void *buat_factorial()
 			unsigned long long f=1;
 			for(k=1;k<=value[i][j];k++)
 			{
-				f= f*k;
-				hasil_factorial[i][j] = f;
+				f= f+k;
+				hasil_factorial[i][j] = f-1;
 			}
-			//f=1;
 		}
 	}
 }
