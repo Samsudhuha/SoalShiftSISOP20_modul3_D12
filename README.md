@@ -15,33 +15,44 @@ Samsu Dhuha   05111840000155
 ##### 1. Buatlah program C dengan nama "4a.c", yang berisi program untukmelakukan perkalian matriks. Ukuran matriks pertama adalah 4x2, dan matriks kedua 2x5. Isi dari matriks didefinisikan di dalam kodingan. Matriks nantinya akan berisi angka 1-20 (tidak perlu dibuat filter angka).
 ##### 2. Tampilkan matriks hasil perkalian tadi ke layar.
 
-/* Structure for passing data to threads */
+++ Mendefinisikan ukuran matriks dan isi matriks
+```
+#define M 4
+#define K 2
+#define N 5
+#define NUM_THREADS M * N
+int (*value)[10];
 
-``
+/* Global variables for threads to share */
+int A[M][K] = {{0,1},
+               {2,3},
+               {4,5},
+               {6,7}
+              };
+int B[K][N] = {{1,1,1,1,1}, 
+               {1,1,1,1,1}
+              };
 
+```
 
-void *runner(void *ptr); /* the thread */
-
-
-int main(int argc, char **argv)
-
+++ Struct untuk passing data ke threads
+```
+struct v
 {
-
-	int i, j;
-	
-	int thread_counter = 0;
-	
-    key_t key = 1234;
-    
+	int i; /* row */
+	int j; /* column */
+};
+```
+++ Membuat shared memory
+```
+  key_t key = 1234;
     int shmid = shmget(key, sizeof(int[10][10]), IPC_CREAT | 0666);
-    
     value = shmat(shmid, 0, 0);
-    
-	
-	pthread_t workers[NUM_THREADS];
-	
-	/* create M * N worker threads */
-	for (i = 0; i < M; i++)
+```
+
+++ Membuat M*N bekerja di thread
+```
+for (i = 0; i < M; i++)
 	{
 		for (j = 0; j < N; j++) 
 		{
@@ -54,9 +65,11 @@ int main(int argc, char **argv)
 			thread_counter++;
 		}
 	}
-	
-	/* Waiting for threads to complete */
-	for (i = 0; i < NUM_THREADS; i++)
+```
+
+++ Menunggu threads selesa mengalikan
+```
+for (i = 0; i < NUM_THREADS; i++)
 	{
 	    pthread_join(workers[i], NULL);
 	}
@@ -69,17 +82,15 @@ int main(int argc, char **argv)
 		}
 		printf("\n");
 	}
-	return 0;
-}
+```
 
+
+++ Casting paramater ke struct v pointer
+
+```
 void *runner(void *ptr)
-
 {	
-
-	/* Casting paramater to struct v pointer */
-	
 	struct v *data = ptr;
-	
 	int i, sum = 0;
 	
 	for(i = 0; i < K; i++)
@@ -88,12 +99,10 @@ void *runner(void *ptr)
 	}
 	
 	value[data->i][data->j] = sum;
-	
 	pthread_exit(0);
 }
 
-
-``
+```
 
 
 
