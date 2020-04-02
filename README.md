@@ -15,9 +15,12 @@ Samsu Dhuha   05111840000155
 ##### 1. Buatlah program C dengan nama "4a.c", yang berisi program untukmelakukan perkalian matriks. Ukuran matriks pertama adalah 4x2, dan matriks kedua 2x5. Isi dari matriks didefinisikan di dalam kodingan. Matriks nantinya akan berisi angka 1-20 (tidak perlu dibuat filter angka).
 ##### 2. Tampilkan matriks hasil perkalian tadi ke layar.
 
+``
+
+
 /* Global variables for threads to share */
 
-``
+
 int A[M][K] = {{0,1},
 
                {2,3},
@@ -33,11 +36,12 @@ int B[K][N] = {{1,1,1,1,1},
               {1,1,1,1,1}
               
               };
-``
+
 
 
 /* Structure for passing data to threads */
-``
+
+
 struct v
 
 {
@@ -48,9 +52,7 @@ struct v
 
 };
 
-``
 
-``
 void *runner(void *ptr); /* the thread */
 
 int main(int argc, char **argv)
@@ -79,9 +81,9 @@ int main(int argc, char **argv)
 		}
 	}
 	
-  ``
+ 
 	/* Waiting for threads to complete */
-``
+
 	for (i = 0; i < NUM_THREADS; i++)
 	{
 	    pthread_join(workers[i], NULL);
@@ -98,9 +100,9 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-``
 
-``
+
+
 void *runner(void *ptr)
 {	
 	/* Casting paramater to struct v pointer */
@@ -115,5 +117,6 @@ void *runner(void *ptr)
 	value[data->i][data->j] = sum;
 	pthread_exit(0);
 }
+
 ``
 
