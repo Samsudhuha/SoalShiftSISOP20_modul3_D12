@@ -186,9 +186,10 @@ void *buat_factorial()
 
 
 #### 4c
+#### 1. Buatlah program C ketiga dengan nama " 4c.c ". Program ini tidak memiliki hubungan terhadap program yang lalu.
+#### 2. Pada program ini, Norland diminta mengetahui jumlah file dan folder di direktori saat ini dengan command " ls | wc -l ". Karena sudah belajar IPC, Norland mengerjakannya dengan semangat.( Catatan! : Harus menggunakan IPC Pipes)
 
-
-+++ Mendeklarasikan pipe dan fork
+++ Mendeklarasikan pipe dan fork
 ```
 int p[2];
   pipe(p);
@@ -196,7 +197,7 @@ int p[2];
 
 ```
 
-+++ Fork pada parent yang menrima inputan dari child yang dihubungkan dengan pipe
+++ Fork pada parent yang menrima inputan dari child yang dihubungkan dengan pipe
 ```
 if (pid == 0) // parent
     {
