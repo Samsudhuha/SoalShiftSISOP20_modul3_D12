@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     char f[] = "-f";
     char d[] = "-d";
     int i = 2;
-
+    strcpy(unknown, "Unknown");
     // argumen = -f
     if (strcmp (argv[1],f) == 0)
     {
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
             // mencari nama file, ekstensi, dan path
             strcpy(FileName, argv[i]);
-            strcpy(unknown, "Unknown");
+
             StripFileName(FileName, NewFileName, ekstensi);
             int cek = strlen(ekstensi);
             taruhvariable(NewFileName, ekstensi, pathawal, pathakhir, unknown);
@@ -112,7 +112,6 @@ int main(int argc, char* argv[])
                 memset(pathakhir, 0, sizeof(pathakhir));
 
                 strcpy(FileName, ent->d_name);
-                strcpy(unknown, "Unknown");
                 StripFileName(FileName, NewFileName, ekstensi);
                 int cek = strlen(ekstensi);
                 taruhvariable(NewFileName, ekstensi, pathawal, pathakhir, unknown);
