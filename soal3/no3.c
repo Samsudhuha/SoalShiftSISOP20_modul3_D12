@@ -5,11 +5,14 @@
 #include<unistd.h>
 #include<sys/types.h>
 #include<sys/wait.h>
-#include <sys/stat.h> 
+#include<sys/stat.h> 
+#include<dirent.h>
+// #include <dir.h>
 #define MAX 256
  
 /*************** PROTOTYPES ************************/
 static void StripFileName(char *FileName, char *NewFileName, char *ekstensi);
+static void taruhvariable(char *NewFileName, char *ekstensi, char *pathawal, char *pathakhir, char* unknown);
 void* makedir(void *data);
 void* move(void *data);
 void* thread(void *arg);
@@ -60,24 +63,7 @@ int main(int argc, char* argv[])
             strcpy(unknown, "Unknown");
             StripFileName(FileName, NewFileName, ekstensi);
             int cek = strlen(ekstensi);
-            if (cek != 0)
-            {
-                strcat(NewFileName, ".");
-                strcat(NewFileName, ekstensi);
-                strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/");
-                strcat(pathawal, NewFileName);
-                strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
-                strcat(pathakhir, ekstensi);
-                strcat(pathakhir, "/");
-                strcat(pathakhir, NewFileName);
-            } else {
-                strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/");
-                strcat(pathawal, NewFileName);
-                strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
-                strcat(pathakhir, unknown);
-                strcat(pathakhir, "/");
-                strcat(pathakhir, NewFileName);
-            }
+            taruhvariable(NewFileName, ekstensi, pathawal, pathakhir, unknown);
 
             // ditaruh dalam struct
             struct v *data = (struct v*) malloc (sizeof (struct v));
@@ -110,7 +96,61 @@ int main(int argc, char* argv[])
 
     if (strcmp (argv[1],bintang) == 0)
     {
+        DIR *dir;
+        struct dirent *ent;
+        int i = 0;
+        if ((dir = opendir ("/Users/samsudhuha/Desktop/sisop/shift3/kategori")) != NULL) {
+        /* print all the files and directories within directory */
+        while ((ent = readdir (dir)) != NULL) {
+            if (i >= 2)
+            {
+                printf ("%s\n", ent->d_name);
+                memset(FileName, 0, sizeof(FileName));
+                memset(NewFileName, 0, sizeof(NewFileName));
+                memset(ekstensi, 0, sizeof(ekstensi));
+                memset(pathawal, 0, sizeof(pathawal));
+                memset(pathakhir, 0, sizeof(pathakhir));
 
+                strcpy(FileName, ent->d_name);
+                strcpy(unknown, "Unknown");
+                StripFileName(FileName, NewFileName, ekstensi);
+                int cek = strlen(ekstensi);
+                taruhvariable(NewFileName, ekstensi, pathawal, pathakhir, unknown);
+
+                struct v *data = (struct v*) malloc (sizeof (struct v));
+                *data -> x = NewFileName;
+                if (cek != 0)
+                {
+                    *data -> y = ekstensi;
+                } else {
+                    *data -> y = unknown;
+                }
+                *data -> z = pathawal;
+                *data -> za = pathakhir;
+
+                int k = 0;
+                status = 0;
+
+                //membuat thread
+                while (k<2)
+                {
+                    if(k==0){
+                        pthread_create(&(tid[k]),NULL,&makedir,(void *) data);
+                    } else {
+                        pthread_create(&(tid[k]),NULL,&move,(void *) data);
+                    }
+                    pthread_join(tid[k],NULL);
+                    k++;
+                }
+            }
+            i++;
+        }
+        closedir (dir);
+        } else {
+        /* could not open directory */
+        perror ("didn't get directory");
+        return EXIT_FAILURE;
+        }
     }
  
     if (strcmp (argv[1],d) == 0)
@@ -120,7 +160,30 @@ int main(int argc, char* argv[])
  
     return 0;
 }
- 
+
+static void taruhvariable(char *NewFileName, char *ekstensi, char *pathawal, char *pathakhir, char* unknown)
+{
+    int cek = strlen(ekstensi);
+    if (cek != 0)
+    {
+        strcat(NewFileName, ".");
+        strcat(NewFileName, ekstensi);
+        strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/kategori/");
+        strcat(pathawal, NewFileName);
+        strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
+        strcat(pathakhir, ekstensi);
+        strcat(pathakhir, "/");
+        strcat(pathakhir, NewFileName);
+    } else {
+        strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/kategori/");
+        strcat(pathawal, NewFileName);
+        strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
+        strcat(pathakhir, unknown);
+        strcat(pathakhir, "/");
+        strcat(pathakhir, NewFileName);
+    }
+}
+
 static void StripFileName(char *FileName, char *NewFileName, char *ekstensi)
 {
     int PLocation;
