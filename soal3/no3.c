@@ -34,8 +34,9 @@ int main(int argc, char* argv[])
     char FileName[31];
     char NewFileName[31];
     char ekstensi[5];
-    char pathawal[50];
-    char pathakhir[50];
+    char pathawal[100];
+    char pathakhir[100];
+    char unknown[10];
     char bintang[] = "*";
     char f[] = "-f";
     char d[] = "-d";
@@ -56,20 +57,37 @@ int main(int argc, char* argv[])
 
             // mencari nama file, ekstensi, dan path
             strcpy(FileName, argv[i]);
+            strcpy(unknown, "Unknown");
             StripFileName(FileName, NewFileName, ekstensi);
-            strcat(NewFileName, ".");
-            strcat(NewFileName, ekstensi);
-            strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/");
-            strcat(pathawal, NewFileName);
-            strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
-            strcat(pathakhir, ekstensi);
-            strcat(pathakhir, "/");
-            strcat(pathakhir, NewFileName);
+            int cek = strlen(ekstensi);
+            if (cek != 0)
+            {
+                strcat(NewFileName, ".");
+                strcat(NewFileName, ekstensi);
+                strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/");
+                strcat(pathawal, NewFileName);
+                strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
+                strcat(pathakhir, ekstensi);
+                strcat(pathakhir, "/");
+                strcat(pathakhir, NewFileName);
+            } else {
+                strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/");
+                strcat(pathawal, NewFileName);
+                strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
+                strcat(pathakhir, unknown);
+                strcat(pathakhir, "/");
+                strcat(pathakhir, NewFileName);
+            }
 
             // ditaruh dalam struct
             struct v *data = (struct v*) malloc (sizeof (struct v));
             *data -> x = NewFileName;
-            *data -> y = ekstensi;
+            if (cek != 0)
+            {
+                *data -> y = ekstensi;
+            } else {
+                *data -> y = unknown;
+            }
             *data -> z = pathawal;
             *data -> za = pathakhir;
 
