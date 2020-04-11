@@ -17,11 +17,14 @@ Samsu Dhuha   05111840000155
 #include<unistd.h>
 #include<sys/types.h>
 #include<sys/wait.h>
-#include <sys/stat.h> 
+#include<sys/stat.h> 
+#include<dirent.h>
+// #include <dir.h>
 #define MAX 256
  
 /*************** PROTOTYPES ************************/
 static void StripFileName(char *FileName, char *NewFileName, char *ekstensi);
+static void taruhvariable(char *NewFileName, char *ekstensi, char *pathawal, char *pathakhir, char* unknown);
 void* makedir(void *data);
 void* move(void *data);
 void* thread(void *arg);
@@ -46,13 +49,14 @@ int main(int argc, char* argv[])
     char FileName[31];
     char NewFileName[31];
     char ekstensi[5];
-    char pathawal[50];
-    char pathakhir[50];
+    char pathawal[100];
+    char pathakhir[100];
+    char unknown[10];
     char bintang[] = "*";
     char f[] = "-f";
     char d[] = "-d";
     int i = 2;
-
+    strcpy(unknown, "Unknown");
     // argumen = -f
     if (strcmp (argv[1],f) == 0)
     {
@@ -68,23 +72,27 @@ int main(int argc, char* argv[])
 
             // mencari nama file, ekstensi, dan path
             strcpy(FileName, argv[i]);
+
             StripFileName(FileName, NewFileName, ekstensi);
-            strcat(NewFileName, ".");
-            strcat(NewFileName, ekstensi);
-            strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/");
-            strcat(pathawal, NewFileName);
-            strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
-            strcat(pathakhir, ekstensi);
-            strcat(pathakhir, "/");
-            strcat(pathakhir, NewFileName);
+            int cek = strlen(ekstensi);
+            taruhvariable(NewFileName, ekstensi, pathawal, pathakhir, unknown);
 
             // ditaruh dalam struct
             struct v *data = (struct v*) malloc (sizeof (struct v));
             *data -> x = NewFileName;
-            *data -> y = ekstensi;
+            if (cek != 0)
+            {
+                *data -> y = ekstensi;
+            } else {
+                *data -> y = unknown;
+            }
             *data -> z = pathawal;
             *data -> za = pathakhir;
 
+            printf("%s\n", *data->x);
+            printf("%s\n", *data->y);
+            printf("%s\n", *data->z);
+            printf("%s\n", *data->za);
             int k = 0;
             status = 0;
 
@@ -104,7 +112,63 @@ int main(int argc, char* argv[])
 
     if (strcmp (argv[1],bintang) == 0)
     {
+        DIR *dir;
+        struct dirent *ent;
+        int i = 0;
+        if ((dir = opendir ("/Users/samsudhuha/Desktop/sisop/shift3/c/")) != NULL) {
+        /* print all the files and directories within directory */
+        while ((ent = readdir (dir)) != NULL) {
+            printf("%s\n", ent->d_name);
+            if (i >= 2)
+            {
+                memset(FileName, 0, sizeof(FileName));
+                memset(NewFileName, 0, sizeof(NewFileName));
+                memset(ekstensi, 0, sizeof(ekstensi));
+                memset(pathawal, 0, sizeof(pathawal));
+                memset(pathakhir, 0, sizeof(pathakhir));
 
+                strcpy(FileName, ent->d_name);
+                StripFileName(FileName, NewFileName, ekstensi);
+                int cek = strlen(ekstensi);
+                taruhvariable(NewFileName, ekstensi, pathawal, pathakhir, unknown);
+
+                struct v *data = (struct v*) malloc (sizeof (struct v));
+                *data -> x = NewFileName;
+                if (cek != 0)
+                {
+                    *data -> y = ekstensi;
+                } else {
+                    *data -> y = unknown;
+                }
+                *data -> z = pathawal;
+                *data -> za = pathakhir;
+
+                int k = 0;
+                status = 0;
+                printf("%s\n", *data->x);
+                printf("%s\n", *data->y);
+                printf("%s\n", *data->z);
+                printf("%s\n", *data->za);
+                // membuat thread
+                while (k<2)
+                {
+                    if(k==0){
+                        pthread_create(&(tid[k]),NULL,&makedir,(void *) data);
+                    } else {
+                        pthread_create(&(tid[k]),NULL,&move,(void *) data);
+                    }
+                    pthread_join(tid[k],NULL);
+                    k++;
+                }
+            }
+            i++;
+        }
+        closedir (dir);
+        } else {
+        /* could not open directory */
+        perror ("didn't get directory");
+        return EXIT_FAILURE;
+        }
     }
  
     if (strcmp (argv[1],d) == 0)
@@ -114,7 +178,34 @@ int main(int argc, char* argv[])
  
     return 0;
 }
- 
+```
++++ untuk set isi variable
+```
+static void taruhvariable(char *NewFileName, char *ekstensi, char *pathawal, char *pathakhir, char* unknown)
+{
+    int cek = strlen(ekstensi);
+    if (cek != 0)
+    {
+        strcat(NewFileName, ".");
+        strcat(NewFileName, ekstensi);
+        strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/soal3/");
+        strcat(pathawal, NewFileName);
+        strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
+        strcat(pathakhir, ekstensi);
+        strcat(pathakhir, "/");
+        strcat(pathakhir, NewFileName);
+    } else {
+        strcat(pathawal, "/Users/samsudhuha/Desktop/sisop/shift3/soal3/");
+        strcat(pathawal, NewFileName);
+        strcat(pathakhir, "/Users/samsudhuha/Desktop/sisop/shift3/");
+        strcat(pathakhir, unknown);
+        strcat(pathakhir, "/");
+        strcat(pathakhir, NewFileName);
+    }
+}
+```
++++ untuk mendapatkan nama file dan ekstensi
+```
 static void StripFileName(char *FileName, char *NewFileName, char *ekstensi)
 {
     int PLocation;
@@ -176,7 +267,9 @@ static void StripFileName(char *FileName, char *NewFileName, char *ekstensi)
     NewFileName[x] = '\0';
     ekstensi[y] = '\0';
 }
-
+```
++++ untuk membuat directory
+```
 void* makedir(void *param)
 {
     struct v *par = (struct v*) param;
@@ -187,7 +280,9 @@ void* makedir(void *param)
 
 	return NULL;
 }
-
+```
++++ untuk memindahkan file
+```
 void* move(void *param)
 {
     struct v *par = (struct v*) param;
@@ -225,7 +320,6 @@ void* move(void *param)
 
 	return NULL;
 }
-
 ```
 
 
